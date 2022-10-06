@@ -1,25 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react'
+import { firebaseConfig } from './firebase.js'
+import { initializeApp } from 'firebase/app'
+import { 
+	getFirestore,
+	collection, 
+	getDocs } from 'firebase/firestore'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = () => {
+
+	const [blogs, setBlogs] = useState([]);
+
+	initializeApp(firebaseConfig);
+	const db = getFirestore();
+	const colBlogs = collection(db, 'blogs');
+
+	useEffect(() => {
+		getDocs(colBlogs)
+		.then((snapshot) => {
+			const blogArr = [];
+			snapshot.docs.forEach(doc => {
+				const blog = { ...doc.data(), id: doc.id };
+				blogArr.push(blog);
+			});
+			setBlogs(blogArr);
+		})
+		.catch(error => error(error.message));
+	}, []);
+	
+
+	return (
+		<div className="app">
+			{blogs.map(blog => (
+				<div key={blog.id}>
+					<p>{blog.title}</p>
+					<p>{blog.content}</p>
+				</div>
+			))}
+		</div>
+	)
 }
 
-export default App;
+export default App
