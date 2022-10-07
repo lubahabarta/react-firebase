@@ -13,11 +13,10 @@ const App = () => {
 
 	const [blogs, setBlogs] = useState([]);
 
-
-	initializeApp(firebaseConfig);
-	const db = getFirestore();
-
 	useEffect(() => {
+
+		initializeApp(firebaseConfig);
+		const db = getFirestore();
 
 		// (async () => {
 		// 	const querySnapshot = await getDocs(collection(db, 'blogs'));
@@ -33,7 +32,7 @@ const App = () => {
 
 		onSnapshot(collection(db, 'blogs'), querySnapshot => {
 			const blogArr = [];
-	
+
 			querySnapshot.forEach(doc => {
 				const blog = { ...doc.data(), id: doc.id };
 				blogArr.push(blog);
