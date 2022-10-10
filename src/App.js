@@ -7,49 +7,97 @@ import {
 	getDocs,
 	doc,
 	onSnapshot,
+	query, orderBy, serverTimestamp, 
+	addDoc
 } from 'firebase/firestore'
 
 const App = () => {
 
-	const [blogs, setBlogs] = useState([]);
+	const [messages, setMessages] = useState([]);
+	const [input, setInput] = useState("");
+
+	// firestore
+	initializeApp(firebaseConfig);
+	const db = getFirestore();
+
+	// handle functions
+	const handleChange = event => setInput(event.target.value);
+
+	const handleSubmit = event => {
+		event.preventDefault();
+
+		if (event.key === 'enter' && input) {
+			sendMessage(input);
+			setInput('');
+		}
+	}
+
+	const handleClick = event => {
+		event.preventDefault();
+
+		if (input) {
+			sendMessage(input);
+			setInput('');
+		}
+	}	
+
+	const sendMessage = (message) => {
+		addDoc(collection(db, 'messages'), {
+			message: message,
+			createdAt: serverTimestamp()
+		});
+	}
+
+
 
 	useEffect(() => {
+		
+		const q = query(collection(db, 'messages'), orderBy('createdAt'));
 
-		initializeApp(firebaseConfig);
-		const db = getFirestore();
-
+		// get docs once
 		// (async () => {
 		// 	const querySnapshot = await getDocs(collection(db, 'blogs'));
-		// 	const blogArr = [];
+		// 	const messageArr = [];
 	
 		// 	querySnapshot.forEach(doc => {
-		// 		const blog = { ...doc.data(), id: doc.id };
-		// 		blogArr.push(blog);
+		// 		const message = { ...doc.data(), id: doc.id };
+		// 		messageArr.push(message);
 		// 	});
 	
-		// 	setBlogs(blogArr);
+		// 	setMessages(messageArr);
 		// })();
 
-		onSnapshot(collection(db, 'blogs'), querySnapshot => {
-			const blogArr = [];
+		onSnapshot(q, querySnapshot => {
+			const messageArr = [];
 
 			querySnapshot.forEach(doc => {
-				const blog = { ...doc.data(), id: doc.id };
-				blogArr.push(blog);
+				const message = { ...doc.data(), id: doc.id };
+				messageArr.push(message);
+
+				// setMessages(state => [ ...state, {...doc.data(), id: doc.id}] );
 			});
 
-			setBlogs(blogArr);
+			setMessages(messageArr);
 		});
 	}, []);
 
 	return (
 		<div className="app">
-			{blogs.map(blog => (
-				<div key={blog.id}>
-					<p>{blog.title}</p>
-					<p>{blog.content}</p>
-				</div>
+			{messages.map(message => (
+				<span key={message.id}>
+					<p>{message.message}</p>
+				</span>
 			))}
+
+			<form onSubmit={ handleSubmit }>
+				<input 
+					type="text" 
+					value={ input } 
+					onChange={ handleChange }
+					placeholder="Aa"
+				/>
+				<button onClick={ handleClick }>Send</button>
+			</form>
 		</div>
 	)
 }
