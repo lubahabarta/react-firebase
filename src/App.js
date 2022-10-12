@@ -4,9 +4,7 @@ import { initializeApp } from 'firebase/app'
 import { 
 	getFirestore,
 	collection, 
-	getDocs,
-	doc,
-	onSnapshot,
+	getDocs, doc, onSnapshot,
 	query, orderBy, serverTimestamp, 
 	addDoc
 } from 'firebase/firestore'
@@ -83,20 +81,30 @@ const App = () => {
 
 	return (
 		<div className="app">
-			{messages.map(message => (
-				<span key={message.id}>
-					<p>{message.message}</p>
-				</span>
-			))}
-
-			<form onSubmit={ handleSubmit }>
+			<div className='flex flex-col items-end p-1 mb-10'>
+				{messages.map(message => (
+					<span key={message.id} className="bg-gradient-to-b from-sky-500 to-sky-600 text-white inline-block max-w-xs md:max-w-lg px-4 py-1 my-1 rounded-2xl">
+						<p >{message.message}</p>
+					</span>
+				))}
+			</div>
+			
+			<form onSubmit={ handleSubmit } className='bg-white p-1 w-full flex border-t-2 fixed bottom-0 z-10'>
 				<input 
+					className='flex-auto bg-gray-200 px-4 py-1 rounded-full'
 					type="text" 
 					value={ input } 
 					onChange={ handleChange }
 					placeholder="Aa"
 				/>
-				<button onClick={ handleClick }>Send</button>
+				<button 
+					className='bg-gradient-to-b from-sky-500 to-sky-600 text-white p-2 mx-1 rounded-full'
+					onClick={ handleClick }
+				>
+					<svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+						<path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+					</svg>
+				</button>
 			</form>
 		</div>
 	)
