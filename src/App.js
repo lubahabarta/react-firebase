@@ -11,6 +11,9 @@ import {
 
 const App = () => {
 
+	const [name, setName] = useState("Your name");
+	const [nameInput, setNameInput] = useState(false);
+
 	const [messages, setMessages] = useState([]);
 	const [input, setInput] = useState("");
 
@@ -19,6 +22,8 @@ const App = () => {
 	const db = getFirestore();
 
 	// handle functions
+	const handleNameChange = event => setName(event.target.value);
+
 	const handleChange = event => setInput(event.target.value);
 
 	const handleSubmit = event => {
@@ -41,6 +46,7 @@ const App = () => {
 
 	const sendMessage = (message) => {
 		addDoc(collection(db, 'messages'), {
+			author: name,
 			message: message,
 			createdAt: serverTimestamp()
 		});
@@ -81,11 +87,41 @@ const App = () => {
 
 	return (
 		<div className="app">
-			<div className='flex flex-col items-end p-1 mb-10'>
+			<header className='flex justify-center items-center w-full h-16 bg-gradient-to-b from-white to-gray-200 fixed top-0 left-0'>
+				{ nameInput ? 
+					( <form onSubmit={ () => setNameInput(false) } className='w-1/3'>
+						<input 
+							type="text" 
+							className='w-full bg-gray-300 px-4 py-1 rounded-full text-center text-xl' 
+							placeholder='Your name'
+							onChange={handleNameChange}
+							value={name}
+						/>
+					</form> ) :
+					( <h1 
+						className='text-xl font-semibold' 
+						onClick={() => setNameInput(true)}>{ name }
+					</h1> )}
+			</header>
+
+			<div className='p-1 mt-16 mb-10'>
 				{messages.map(message => (
-					<span key={message.id} className="bg-gradient-to-b from-sky-500 to-sky-600 text-white inline-block max-w-xs md:max-w-lg px-4 py-1 my-1 rounded-2xl">
-						<p >{message.message}</p>
-					</span>
+					message.author === name ? (
+						<div key={message.id} className='flex flex-col items-end'>
+							<h4 className='text-xs text-gray-500'>{message.author}</h4>
+							<span className="bg-gradient-to-b from-sky-500 to-sky-600 text-white inline-block max-w-xs md:max-w-lg px-4 py-1 my-1 rounded-2xl">
+								<p >{message.message}</p>
+							</span>
+						</div>
+					) : (
+						<div key={message.id} className='flex flex-col items-start'>
+							<h4 className='text-xs text-gray-500'>{message.author}</h4>
+							<span className="bg-gradient-to-b from-orange-500 to-orange-700 text-white inline-block max-w-xs md:max-w-lg px-4 py-1 my-1 rounded-2xl">
+								<p >{message.message}</p>
+							</span>
+						</div>
+					)
+					
 				))}
 			</div>
 			
