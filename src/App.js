@@ -89,7 +89,7 @@ const App = () => {
 		<div className="app">
 			<header className='flex justify-center items-center w-full h-16 bg-gradient-to-b from-white to-gray-200 fixed top-0 left-0'>
 				{ nameInput ? 
-					( <form onSubmit={ () => setNameInput(false) } className='w-1/3'>
+					( <form onSubmit={ () => setNameInput(false) } className='w-40'>
 						<input 
 							type="text" 
 							className='w-full bg-gray-300 px-4 py-1 rounded-full text-center text-xl' 
